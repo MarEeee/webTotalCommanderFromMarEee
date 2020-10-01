@@ -1,12 +1,13 @@
 <template>
     <div class = "row__elements">
-       <div class = "row__element">
+       <div @click="event =>clickOnRow(elem, whichScreen)" class = "row__element">
            <div class = "file-info"> </div>
-           <div class = "file-info title"> {{elem.title}} </div>
-           <div class = "file-info size"> {{elem.size}} </div>
-           <div class = "file-info date"> {{elem.date}} </div>
-        </div>      
-        
+           <div class = "file-info title"> {{elem.fileName}} </div>
+           <div class = "file-info size"> {{elem.sizeOrType}} </div>
+           <div class = "file-info date"> {{elem.dateOfChange}} </div>
+           <div class = "file-info date"> {{whichScreen}} </div>
+           <div class = "file-info date"> {{elem.dir}} </div>                  
+        </div>   
     </div>
 </template>
 
@@ -16,17 +17,84 @@ export default {
     props:{
         elem:{
             type:Object,
-            required: true
+            default: () => ({}),
+            required: true,             
+        },
+        whichScreen:{
+            type:Boolean,
+            default: false,
+        },
+        // firstWindow:{
+        //     type:Object,
+        //     default: () => ({}),
+        // },
+        // secondWindow:{
+        //     type:Object,
+        //     default: () => ({}),
+        // },
+    },
+    
+    data()
+        { 
+            return{
+                delay: 500,
+                clicks: 0,
+                timer: null,
+                helper:[],                
+            } 
+        },
+    methods:{
+        clickOnRow: function(elem, whichScreen){
+          this.clicks++
+          
+          if(this.clicks === 1) {
+            var self = this
+            this.timer = setTimeout(function() {            
+            console.log("одинарный");                 
+              self.clicks = 0
+            }, this.delay);
+          } else{
+             clearTimeout(this.timer);
+             console.log("двойной");
+             
+             elem['whichScreen']  = whichScreen;    
+             console.log(elem);
+                  
+             fetch('/currentDir1',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',                    
+                },
+                body: JSON.stringify(elem)                
+                })
+                .then(response => response.json())    
+                .then(json => this.helper = json) 
+                console.log("helper");
+                 console.log(this.helper);
+                 this.$emit("newvalue",{
+                     data: this.helper
+                 })
+
+            //  if(whichScreen){
+            //      this.firstWindow = this.helper;  
+            //      console.log(this.helper);
+            //      console.log(this.firstWindow);  
+            //      console.log(firstWindow);                
+                 
+            //  }else{
+            //      secondWindow = this.helper;
+            //      console.log(this.helper);  
+            //  }            
+             
+             this.clicks = 0;                          
+          }        	
         }
-    }
+    }, 
 }
 </script>
 
 
 <style scoped>
-
-
-
 .row__element{
 
     width: 632px;

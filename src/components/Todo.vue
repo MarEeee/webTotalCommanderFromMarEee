@@ -1,17 +1,32 @@
 <template>
     <div class = "main-window">
-        <ul>            
-            <Item
-            v-for="elem of firstWindow"
+        <ul >    
+            <Directoire
+             v-bind:directories="directories"
+            />
+            <span>{{firstDir}}</span>                              
+            <Item           
+            v-for="elem of firstWindow.table"
             v-bind:key="elem"
             v-bind:elem="elem"
+            v-bind:whichScreen="whichScreen"
+            v-bind:firstWindow="firstWindow"
+            v-bind:secondWindow="secondWindow"
+            @newvalue="newvalue"
             />
         </ul>
-        <ul>    
+        <ul @newValue="newvalue"> 
+             <Directoire
+              v-bind:directories="directories"
+             />  
+              <span>{{secondDir}}</span>            
              <Item
-            v-for="elem of secondWindow"
+            v-for="elem of secondWindow.table"
             v-bind:key="elem"
             v-bind:elem="elem"
+            v-bind:whichScreen="!whichScreen"
+            v-bind:firstWindow="firstWindow"
+            v-bind:secondWindow="secondWindow"
             />   
         </ul>      
         
@@ -20,10 +35,24 @@
 
 <script>
 import Item from '@/components/itemVue.vue'
+import Directoire from '@/components/DirectoriesVue.vue'
+
+
 export default {
-    props: ['firstWindow','secondWindow'], 
+    props: ['firstWindow','secondWindow', 'directories', 'firstDir', 'secondDir', 'whichScreen'], 
     components:{
-        Item
+        Item,        
+        Directoire
+    },
+    methods:{
+        newvalue(data){
+            console.log("DATAAAAAAAAAAAAAAAAAA");
+            console.log(data);
+            this.$emit("newvalue",{
+                     data: data
+                 });
+        }
+        
     }
 }
 </script>
@@ -33,11 +62,13 @@ export default {
     width: 1280px;
     margin: auto;
     display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  border: 1px solid black;
+    flex-direction: row;
+    justify-content: space-between;
+    border: 1px solid black;
     
 }
+
+
 
 ul{
     list-style: none;

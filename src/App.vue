@@ -7,7 +7,11 @@
         v-bind:firstWindow="firstWindow"
         v-bind:secondWindow="secondWindow"
         v-bind:directories="directories"
+        v-bind:firstDir="firstDir"
+        v-bind:secondDir="secondDir"
         v-bind:whichScreen="whichScreen"
+        v-bind:flagForBack ="flagForBack"
+        v-bind:windows ="windows"
        />
 
        <button @click="relocate()">Перенести</button>
@@ -25,13 +29,19 @@ import Todo from '@/components/Todo.vue'
 export default {
   name: 'App',  
   data(){
-    return {
+    return {      
+      windows:{
+        firstWindow:{},
+        secondWindow:{}
+      },
       firstWindow:[],
-      secondWindow:[],
+      secondWindow:{},
+      objForChangeValue:[],
       directories:["C:","E:","D:"],
       firstDir:"C:",
       secondDir:"C:",
-      whichScreen: true      
+      whichScreen: true,
+      flagForBack: true      
     }
   },
   mounted(){
@@ -45,8 +55,11 @@ export default {
    
   })
     .then(response => response.json())    
-    .then(json => this.firstWindow = json)
+    .then(json => this.windows.firstWindow =  json.table)
     .then(json => console.log(json))
+   ;    
+    // .then(console.log(this.firstWindow)) //почему он выводится как уебище какое-то ? 
+    // .then(this.firstDir = this.firstWindow[0].dir)   
     
     fetch('/2', {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -57,24 +70,29 @@ export default {
         },
   })
   .then(response => response.json()) 
-  .then(json => this.secondWindow = json) 
-  .then(json => console.log(json))     
+  .then(json => this.secondWindow = json.table) 
+  .then(json => console.log(json))
+  // .then(this.secondDir = this.secondWindow[0].dir)      
   },
   
   components: {
     Todo    
   },
   methods:{
-      newvalue(data){
-        console.log("РИСУУУУУУУУУЙ");
-         if(data.whichScreen){
-           this.firstWindow = data;
-          //  this.firstWindow = Object.assign({}, this.firstWindow, data);
-          //  secondWindow = this.secondWindow;
-         }else{
-           this.secondWindow = data;
-          //  this.secondWindow = Object.assign({}, this.secondWindow, data);
-          //  firstWindow = this.firstWindow;
+      newvalue(data, whichScreen){        
+         if(whichScreen){ 
+           console.log("первое");
+           console.log(data);
+           console.log(this.objForChangeValue);
+          //  this.$set(this.windows, 'firstWindow', Object.assign({}, this.firstWindow, data)); 
+           this.windows.firstWindow =  Object.assign({}, this.windows.firstWindow, data); 
+           console.log(this.firstWindow);      
+          //  this.firstWindow =  this.objForChangeValue;
+          
+         }else{          
+           this.secondWindow = Object.assign({}, this.secondWindow, data); 
+           console.log("Второе");
+           console.log(this.secondWindow);          
          }
       }
   }

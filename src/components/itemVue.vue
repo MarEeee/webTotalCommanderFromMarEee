@@ -1,7 +1,7 @@
 <template>
     <div class = "row__elements">
-       <div @click="event =>clickOnRow(elem, whichScreen)" class = "row__element">
-           <div class = "file-info"> </div>
+       <div @click="event =>clickOnRow(elem, whichScreen)" class = "row__element">           
+           <div class = "file-info icon">  </div>
            <div class = "file-info title"> {{elem.fileName}} </div>
            <div class = "file-info size"> {{elem.sizeOrType}} </div>
            <div class = "file-info date"> {{elem.dateOfChange}} </div>
@@ -45,8 +45,7 @@ export default {
         },
     methods:{
         clickOnRow: function(elem, whichScreen){
-          this.clicks++
-          
+          this.clicks++   
           if(this.clicks === 1) {
             var self = this
             this.timer = setTimeout(function() {            
@@ -56,24 +55,51 @@ export default {
           } else{
              clearTimeout(this.timer);
              console.log("двойной");
+
+             console.log(elem);
              
              elem['whichScreen']  = whichScreen;    
-             console.log(elem);
-                  
-             fetch('/currentDir1',{
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',                    
-                },
-                body: JSON.stringify(elem)                
-                })
-                .then(response => response.json())    
-                .then(json => this.helper = json) 
-                console.log("helper");
-                 console.log(this.helper);
-                 this.$emit("newvalue",{
-                     data: this.helper
-                 })
+            //  console.log(this.helper);
+            //  this.nameOfMethod(elem);
+             this.clicks = 0; 
+            fetch('/currentDir1',{
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'                 
+                    },
+                    body: JSON.stringify(elem)                
+                    })
+                    // .then(response => console.log(response))  
+                    .then(response => response.json())    
+                    .then(json => this.helper = json.table)
+                    .then(json => console.log(json))
+                    
+                    .then(this.$emit("newvalue", this.helper, whichScreen))     
+            
+         
+            //  let promise = Promise((resolve) => {     
+            //     fetch('/currentDir1',{
+            //         method: 'POST',
+            //         mode: 'cors',
+            //         headers: {
+            //             'Content-Type': 'application/json',                    
+            //         },
+            //         body: JSON.stringify(elem)                
+            //         })
+            //         .then(response => response.json())    
+            //         .then(json => this.helper = json)
+            //         .then(json =>  this.$emit("newvalue", json)) 
+            //         console.log("helper");
+            //         console.log(this.helper);
+            //         resolve("result");
+            //  });
+           
+            
+             
+             
+                // this.$emit('newvalue', this.helper)
 
             //  if(whichScreen){
             //      this.firstWindow = this.helper;  
@@ -86,9 +112,25 @@ export default {
             //      console.log(this.helper);  
             //  }            
              
-             this.clicks = 0;                          
+                                      
           }        	
-        }
+        },
+        // nameOfMethod: async function(elem){
+        //         const responce = await  fetch('/currentDir1',{
+        //             method: 'POST',
+        //             mode: 'cors',
+        //             headers: {
+        //                 'Content-Type': 'application/json',                    
+        //             },
+        //             body: JSON.stringify(elem)                
+        //             });
+                
+        //             const json = await responce.json();
+        //             console.log(this.helper);
+        //             this.helper = json;
+        //             console.log(this.helper);
+        //             this.$emit("newvalue", json);
+        //     }
     }, 
 }
 </script>
@@ -102,7 +144,9 @@ export default {
     list-style-type: none;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;   
+    justify-content: space-between;
+     margin: 0;
+    border: 1px solid black;    
 }
 .file-info{
     margin-left: 15px;
@@ -120,10 +164,6 @@ export default {
     width: 200px;
 }
 
-.row__elements{
-    margin: 0;
-    border: 1px solid black;    
-}
 
 </style>
 

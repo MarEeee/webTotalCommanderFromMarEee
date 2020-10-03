@@ -4,9 +4,14 @@
             <Directoire
              v-bind:directories="directories"
             />
-            <span>{{firstDir}}</span>                              
+            <span>{{firstDir}}</span> 
+            <BackRowVue
+            v-if="flagForBack"
+            v-bind:whichScreen="whichScreen"
+            />            
+            <div  class = "back-block"> BACK </div>                             
             <Item           
-            v-for="elem of firstWindow.table"
+            v-for="elem of windows.firstWindow"
             v-bind:key="elem"
             v-bind:elem="elem"
             v-bind:whichScreen="whichScreen"
@@ -16,12 +21,18 @@
             />
         </ul>
         <ul @newValue="newvalue"> 
-             <Directoire
+            <Directoire
               v-bind:directories="directories"
-             />  
-              <span>{{secondDir}}</span>            
+             /> 
+              
+            <span>{{secondDir}}</span>
+            <BackRowVue
+                v-if="flagForBack"
+                v-bind:whichScreen="!whichScreen"
+             />
+              <div  class = "back-block"> BACK </div>             
              <Item
-            v-for="elem of secondWindow.table"
+            v-for="elem of secondWindow"
             v-bind:key="elem"
             v-bind:elem="elem"
             v-bind:whichScreen="!whichScreen"
@@ -36,21 +47,18 @@
 <script>
 import Item from '@/components/itemVue.vue'
 import Directoire from '@/components/DirectoriesVue.vue'
-
+import BackRowVue from '@/components/BackRowVue.vue'
 
 export default {
-    props: ['firstWindow','secondWindow', 'directories', 'firstDir', 'secondDir', 'whichScreen'], 
+    props: ['firstWindow','secondWindow', 'directories', 'firstDir', 'secondDir', 'whichScreen', 'flagForBack','windows'], 
     components:{
         Item,        
-        Directoire
+        Directoire,
+        BackRowVue
     },
     methods:{
-        newvalue(data){
-            console.log("DATAAAAAAAAAAAAAAAAAA");
-            console.log(data);
-            this.$emit("newvalue",{
-                     data: data
-                 });
+        newvalue(data,whichScreen){                       
+            this.$emit('newvalue', data, whichScreen);
         }
         
     }
@@ -74,5 +82,8 @@ ul{
     list-style: none;
     margin:0;
     padding: 0
+}
+.back-block{
+    border: 1px solid red;
 }
 </style>

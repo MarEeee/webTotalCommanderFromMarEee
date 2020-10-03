@@ -17,14 +17,16 @@ let secondDir = "E:\\";
 pathToFirstFile = 'data/firstScreen.json';
 pathToSecondFile = 'data/secondScreen.json';
 
-let firstJson = {  // создаем заготвоку для Json файлов
-    table: []
- };
+let firstData = {};  // создаем заготвоку для Json файлов   
 
- let secondJson = { 
-    table: []
- };
 
+let secondData = {}; 
+    
+
+
+ disks = [];
+foo(firstDir,  pathToFirstFile);
+foo(firstDir,  pathToSecondFile);
 
 // var Foo = function(dir, pathToFile){
 //     let Mode = require('stat-mode'); // проверка дириктори или файл
@@ -57,8 +59,7 @@ let firstJson = {  // создаем заготвоку для Json файлов
 //     });
 // }
 
-foo(firstDir,  pathToFirstFile);
-foo(firstDir,  pathToSecondFile);
+
 
 // module.exports = Foo;
 
@@ -72,41 +73,91 @@ foo(firstDir,  pathToSecondFile);
 // exports.dataOfScreens = dataOfScreens;
 
 // console.log(dataOfScreens);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// var spawn = require("child_process").spawn
 
-let sectionsList = [];     //ебаное говно говна, пока не работает >_<
-let str;
+// function listDrives(){
+//     const list  = spawn('cmd');
 
-function get_win_drives(success_cb,error_cb){
-    var stdout = '';
-    var spawn = require('child_process').spawn,
-            list  = spawn('cmd');
+//     return new Promise((resolve, reject) => {
+//         list.stdout.on('data', function (data) {
+//             // console.log('stdout: ' + String(data));
+//             const output =  String(data)
+//             const out = output.split("\r\n").map(e=>e.trim()).filter(e=>e!="")
+//             if (out[0]==="Name"){
+//                 resolve(out.slice(1))
+//             }
+//             // console.log("stdoutput:", out)
+//         });
 
-    list.stdout.on('data', function (data) {
-        stdout += data;
-    });
+//         list.stderr.on('data', function (data) {
+//             // console.log('stderr: ' + data);
+//         });
 
-    list.stderr.on('data', function (data) {
-        console.log('stderr: ' + data);
-    });
+//         list.on('exit', function (code) {
+//             console.log('child process exited with code ' + code);
+//             if (code !== 0){
+//                 reject(code)
+//             }
+//         });
 
-    list.on('exit', function (code) {
-        if (code == 0) {
-            console.log(stdout);
-            var data = stdout.split('\r\n');
-            data = data.splice(4,data.length - 7);
-            data = data.map(Function.prototype.call, String.prototype.trim);
-            console.log(data);
-            // success_cb(data);
-        } else {
-            console.log('child process exited with code ' + code);
-            error_cb();
-        }
-    });
-    list.stdin.write('wmic logicaldisk get caption\n');
-    list.stdin.end();
-}
+//         list.stdin.write('wmic logicaldisk get name\n');
+//         list.stdin.end();
+//     })
+// }
+
+// listDrives().then((data) => console.log(data))
+// console.log(disks[0]);
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// let sectionsList = [];     //ебаное говно говна, пока не работает >_<
+// let str;
+
+// function get_win_drives(success_cb,error_cb){
+//     var stdout = '';
+//     var spawn = require('child_process').spawn,
+//             list  = spawn('cmd');
+
+//     list.stdout.on('data', function (data) {
+//         stdout += data;
+//     });
+
+//     list.stderr.on('data', function (data) {
+//         console.log('stderr: ' + data);
+//     });
+
+//     list.on('exit', function (code) {
+//         if (code == 0) {
+//             // console.log(stdout);
+//             var data = stdout.split('\r\n');
+//             data = data.splice(4,data.length - 7);
+//             data = data.map(Function.prototype.call, String.prototype.trim);
+//             return data;
+//             // console.log(data);
+//             // success_cb(data);
+//         } else {
+//             console.log('child process exited with code ' + code);
+//             error_cb();
+//         }
+//     });
+//     list.stdin.write('wmic logicaldisk get caption\n');
+//     list.stdin.end();
+// }
 
 // sectionsList = get_win_drives();
+// console.log(sectionsList);
+
+
+
+//////////////////////////////////////////////////////////////////////
+
+
+
 
 //  идея - вытащить дочерние пути до всех дисков С-D - E и тд
 
@@ -119,14 +170,14 @@ function get_win_drives(success_cb,error_cb){
 
 //   str = stdout.split(" ");
 // //   str = str.split("\n");
-
 //   console.log(str);
-// //   for(let i = 0; i<stdout.length; i++){
-// //     if(stdout.indexOf(":")!=-1){
-// //        elem =  stdout.split(":");
-// //        console.log(elem);
-// //     }}
-//     // console.log(elem);
+  
+//   for(let i = 0; i<stdout.length; i++){
+//     if(stdout.indexOf(":")!=-1){
+//        elem =  stdout.split(":");
+//        console.log(elem);
+//     }}
+    // console.log(elem);
 // });
 
 // console.log(str);
@@ -144,6 +195,8 @@ function get_win_drives(success_cb,error_cb){
 app.use(express.static(__dirname + '/dist'));
 
 app.use(todoRoutes);
+
+
 
 function start (){
     try {

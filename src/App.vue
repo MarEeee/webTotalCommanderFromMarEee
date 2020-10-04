@@ -4,6 +4,7 @@
       <hr>
       <Todo
         @newvalue = "newvalue"
+        @selectitem = "selectitem"
         v-bind:firstWindow="firstWindow"
         v-bind:secondWindow="secondWindow"
         v-bind:directories="directories"
@@ -13,10 +14,6 @@
         v-bind:flagForBack ="flagForBack"
         v-bind:windows ="windows"
        />
-
-       <button @click="relocate()">Перенести</button>
-       <button @click="copy()">Скопировать</button>
-       <button @click="remove()">Удалить</button>
     </div>
     
 </template>
@@ -29,19 +26,15 @@ import Todo from '@/components/Todo.vue'
 export default {
   name: 'App',  
   data(){
-    return {      
-      windows:{
-        firstWindow:{},
-        secondWindow:{}
-      },
-      firstWindow:[],
-      secondWindow:{},
-      objForChangeValue:[],
+    return {     
+      
+      firstWindow:{},
+      secondWindow:{},     
       directories:["C:","E:","D:"],
       firstDir:"C:",
       secondDir:"C:",
       whichScreen: true,
-      flagForBack: true      
+      flagForBack: true,       
     }
   },
   mounted(){
@@ -55,11 +48,9 @@ export default {
    
   })
     .then(response => response.json())    
-    .then(json => this.windows.firstWindow =  json.table)
-    .then(json => console.log(json))
-   ;    
-    // .then(console.log(this.firstWindow)) //почему он выводится как уебище какое-то ? 
-    // .then(this.firstDir = this.firstWindow[0].dir)   
+    .then(json => this.firstWindow = json.table)
+    // .then(json => this.firstDir = json.table[0].dir)    
+    .then(json => console.log(json))     
     
     fetch('/2', {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -68,34 +59,40 @@ export default {
           'Content-Type': 'application/json',
             'Accept': 'application/json'
         },
-  })
+    })
   .then(response => response.json()) 
-  .then(json => this.secondWindow = json.table) 
+  .then(json => this.secondWindow = json.table)
+  // .then(json => this.secondDir = json.table[0].dir) 
   .then(json => console.log(json))
-  // .then(this.secondDir = this.secondWindow[0].dir)      
+  // .then(this.secondDir = this.secondWindow[0].dir)
+
+
+  fetch('/drives', {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin    
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+    
+    })
+    .then(response => response.json()) 
+    .then(json => this.directories = json)
+    .then(json => console.log("диски", json))       
   },
   
   components: {
     Todo    
   },
   methods:{
-      newvalue(data, whichScreen){        
-         if(whichScreen){ 
-           console.log("первое");
-           console.log(data);
-           console.log(this.objForChangeValue);
-          //  this.$set(this.windows, 'firstWindow', Object.assign({}, this.firstWindow, data)); 
-           this.windows.firstWindow =  Object.assign({}, this.windows.firstWindow, data); 
-           console.log(this.firstWindow);      
-          //  this.firstWindow =  this.objForChangeValue;
-          
-         }else{          
-           this.secondWindow = Object.assign({}, this.secondWindow, data); 
-           console.log("Второе");
-           console.log(this.secondWindow);          
+      newvalue(data){               
+         if(data[1]){ 
+           this.firstWindow = data[0]; 
+         }else{
+           this.secondWindow = data[0];           
          }
       }
-  }
+  },  
 }
 </script>
 

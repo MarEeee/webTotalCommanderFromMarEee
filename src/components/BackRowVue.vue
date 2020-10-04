@@ -1,6 +1,7 @@
 <template>
-    <div class = "row__element" @click="event =>clickOnRow(elem, whichScreen)">
-       БЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭК
+    <div class = "row__element" @dblclick="event =>clickOnRow(data, whichScreen, firstWindow, secondWindow)">
+         БЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭК
+      
     </div>
 </template>
 
@@ -8,35 +9,27 @@
 
 <script>
 export default {
-    props: ['whichScreen'],
+    props: ["whichScreen", 'firstWindow','secondWindow'],
     data()
-        { 
+        {   
             return{
-                delay: 500,
-                clicks: 0,
-                timer: null,
-                helper:[],                
-            } 
-        },
+                data:{}
+            }            
+         },
     methods:{
-        clickOnRow: function(elem, whichScreen){
-          this.clicks++   
-          if(this.clicks === 1) {
-            var self = this
-            this.timer = setTimeout(function() {            
-            console.log("одинарный");                 
-              self.clicks = 0
-            }, this.delay);
-          } else{
-             clearTimeout(this.timer);
-             console.log("двойной");
-
-             console.log(elem);
-             
-             elem['whichScreen']  = whichScreen;    
-            //  console.log(this.helper);
-            //  this.nameOfMethod(elem);
-             this.clicks = 0; 
+        clickOnRow: function(data, whichScreen){
+            data['whichScreen']  = whichScreen;   
+            data['downOrUp'] = true;
+            if(whichScreen){
+                console.log(this.firstWindow[0].dir);
+                data['dir'] = this.firstWindow[0].dir;
+            }else{
+                data['dir'] = this.secondWindow[0].dir;
+            }
+            console.log(data);
+                
+            console.log("elem",data);
+            console.log("whichScreen",whichScreen);
             fetch('/currentDir1',{
                     method: 'POST',
                     mode: 'cors',
@@ -44,9 +37,10 @@ export default {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'                 
                     },
-                    body: JSON.stringify(elem)                
-                    })                   
-                }    
+                    body: JSON.stringify(data)                
+                    }) 
+                    .then(response => response.json()) 
+                    .then(json =>this.$emit("newvalue", [json.table, whichScreen]))     
         },
     }
 
@@ -55,5 +49,7 @@ export default {
 </script>
 
 <style>
-
+.row__element{
+    border: 1px solid red;
+}
 </style>

@@ -11,6 +11,7 @@ let foo = require("./script.js");
 const fs = require('fs');
 const path = "C:\\"; //взять в работу
 
+
 let firstDir = "C:\\";
 let secondDir = "E:\\";
 
@@ -107,7 +108,8 @@ foo(firstDir,  pathToSecondFile);
 // }
 
 // listDrives().then((data) => console.log(data))
-// console.log(disks[0]);
+// console.log("диски");
+// console.log(disks);
 
 
 

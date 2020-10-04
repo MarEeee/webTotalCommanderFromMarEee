@@ -18,20 +18,12 @@ export default {
         elem:{
             type:Object,
             default: () => ({}),
-            required: true,             
+                        
         },
         whichScreen:{
             type:Boolean,
-            default: false,
+            // default: false,
         },
-        // firstWindow:{
-        //     type:Object,
-        //     default: () => ({}),
-        // },
-        // secondWindow:{
-        //     type:Object,
-        //     default: () => ({}),
-        // },
     },
     
     data()
@@ -39,12 +31,11 @@ export default {
             return{
                 delay: 500,
                 clicks: 0,
-                timer: null,
-                helper:[],                
+                timer: null,                             
             } 
         },
     methods:{
-        clickOnRow: function(elem, whichScreen){
+       clickOnRow: function(elem, whichScreen){
           this.clicks++   
           if(this.clicks === 1) {
             var self = this
@@ -52,16 +43,16 @@ export default {
             console.log("одинарный");                 
               self.clicks = 0
             }, this.delay);
+            elem['buttonON'] = true; // нужно ?
+            console.log(elem.buttonON);
+            elem["whichScreen"] = whichScreen;
+            this.$emit("selectelem", elem)
           } else{
              clearTimeout(this.timer);
              console.log("двойной");
-
-             console.log(elem);
-             
-             elem['whichScreen']  = whichScreen;    
-            //  console.log(this.helper);
-            //  this.nameOfMethod(elem);
-             this.clicks = 0; 
+             elem['whichScreen']  = whichScreen;   
+             elem['downOrUp'] = true;
+             this.clicks = 0;                
             fetch('/currentDir1',{
                     method: 'POST',
                     mode: 'cors',
@@ -70,13 +61,10 @@ export default {
                         'Accept': 'application/json'                 
                     },
                     body: JSON.stringify(elem)                
-                    })
-                    // .then(response => console.log(response))  
-                    .then(response => response.json())    
-                    .then(json => this.helper = json.table)
-                    .then(json => console.log(json))
-                    
-                    .then(this.$emit("newvalue", this.helper, whichScreen))     
+                    })                    
+                    .then(response => response.json()) 
+                    .then(json =>this.$emit("newvalue", [json.table, whichScreen]))     
+               
             
          
             //  let promise = Promise((resolve) => {     

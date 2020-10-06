@@ -1,13 +1,12 @@
 <template>
-    <div class = "row__elements">
-       <div @click="event =>clickOnRow(elem, whichScreen)" class = "row__element">           
-           <div class = "file-info icon">  </div>
+    <div class = "row__elements" v-if="!(elem.fileName === '')">
+       <div @click="clickOnRow(elem, whichScreen)" class = "row__element" :class="{ active }">           
+           <img class = "file-info icon" :src = "elem.icon"/>           
            <div class = "file-info title"> {{elem.fileName}} </div>
            <div class = "file-info size"> {{elem.sizeOrType}} </div>
-           <div class = "file-info date"> {{elem.dateOfChange}} </div>
-           <div class = "file-info date"> {{whichScreen}} </div>
-           <div class = "file-info date"> {{elem.dir}} </div>                  
-        </div>   
+           <div class = "file-info date"> {{elem.dateOfChange}} </div>                          
+        </div>
+          
     </div>
 </template>
 
@@ -22,8 +21,8 @@ export default {
         },
         whichScreen:{
             type:Boolean,
-            // default: false,
         },
+        active: Boolean,
     },
     
     data()
@@ -31,7 +30,9 @@ export default {
             return{
                 delay: 500,
                 clicks: 0,
-                timer: null,                             
+                timer: null,
+                activeClass:"",
+                object: {}                            
             } 
         },
     methods:{
@@ -39,86 +40,37 @@ export default {
           this.clicks++   
           if(this.clicks === 1) {
             var self = this
-            this.timer = setTimeout(function() {            
-            console.log("одинарный");                 
+            this.timer = setTimeout(function() {   
               self.clicks = 0
             }, this.delay);
-            elem['buttonON'] = true; // нужно ?
-            console.log(elem.buttonON);
+
             elem["whichScreen"] = whichScreen;
+
+            this.$emit('activate');
             this.$emit("selectelem", elem)
           } else{
-             clearTimeout(this.timer);
-             console.log("двойной");
+             clearTimeout(this.timer);             
              elem['whichScreen']  = whichScreen;   
              elem['downOrUp'] = true;
-             this.clicks = 0;                
-            fetch('/currentDir1',{
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'                 
-                    },
-                    body: JSON.stringify(elem)                
+             this.clicks = 0;
+             if(elem.sizeOrType === "<папка>")   {            
+                fetch('/redrowWindow',{
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'                 
+                        },
+                        body: JSON.stringify(elem)                
                     })                    
                     .then(response => response.json()) 
-                    .then(json =>this.$emit("newvalue", [json.table, whichScreen]))     
-               
-            
-         
-            //  let promise = Promise((resolve) => {     
-            //     fetch('/currentDir1',{
-            //         method: 'POST',
-            //         mode: 'cors',
-            //         headers: {
-            //             'Content-Type': 'application/json',                    
-            //         },
-            //         body: JSON.stringify(elem)                
-            //         })
-            //         .then(response => response.json())    
-            //         .then(json => this.helper = json)
-            //         .then(json =>  this.$emit("newvalue", json)) 
-            //         console.log("helper");
-            //         console.log(this.helper);
-            //         resolve("result");
-            //  });
-           
-            
-             
-             
-                // this.$emit('newvalue', this.helper)
-
-            //  if(whichScreen){
-            //      this.firstWindow = this.helper;  
-            //      console.log(this.helper);
-            //      console.log(this.firstWindow);  
-            //      console.log(firstWindow);                
-                 
-            //  }else{
-            //      secondWindow = this.helper;
-            //      console.log(this.helper);  
-            //  }            
-             
-                                      
+                    .then(json =>this.$emit("newvalue", [json.table, whichScreen])) 
+             }  
           }        	
         },
-        // nameOfMethod: async function(elem){
-        //         const responce = await  fetch('/currentDir1',{
-        //             method: 'POST',
-        //             mode: 'cors',
-        //             headers: {
-        //                 'Content-Type': 'application/json',                    
-        //             },
-        //             body: JSON.stringify(elem)                
-        //             });
-                
-        //             const json = await responce.json();
-        //             console.log(this.helper);
-        //             this.helper = json;
-        //             console.log(this.helper);
-        //             this.$emit("newvalue", json);
-        //     }
+        makeActive:function(elem){
+            this.activeClass = elem;
+        },
     }, 
 }
 </script>
@@ -127,21 +79,25 @@ export default {
 <style scoped>
 .row__element{
 
-    width: 632px;
-    margin: auto;
+    width: 630px;
+    height: 25px;    
     list-style-type: none;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-     margin: 0;
-    border: 1px solid black;    
+    margin: 15px auto auto auto;
+         
 }
 .file-info{
-    margin-left: 15px;
+    overflow-x:hidden;
+    overflow-y:hidden;
+    margin:auto auto auto 12px;
 }
 
 .title{
     width: 300px;
+    height: 20px;
+    
 }
 
 .size{
@@ -151,7 +107,16 @@ export default {
 .date{
     width: 200px;
 }
-
+.active{
+    border: 1px solid blue;
+    background-color: #679FD2;
+    
+    
+}
+.icon{
+    width: 20px;
+    height: 20px;
+}
 
 </style>
 

@@ -1,11 +1,8 @@
 <template>
-    <div class = "row__element" @dblclick="event =>clickOnRow(data, whichScreen, firstWindow, secondWindow)">
-         БЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭК
-      
+    <div class = "row__element">
+         <img src = "./../images/back.png" class = "back-image" @dblclick="clickOnRow(data, whichScreen, firstWindow, secondWindow)"/>      
     </div>
 </template>
-
-
 
 <script>
 export default {
@@ -20,17 +17,13 @@ export default {
         clickOnRow: function(data, whichScreen){
             data['whichScreen']  = whichScreen;   
             data['downOrUp'] = true;
-            if(whichScreen){
-                console.log(this.firstWindow[0].dir);
+            if(whichScreen){                
                 data['dir'] = this.firstWindow[0].dir;
             }else{
                 data['dir'] = this.secondWindow[0].dir;
             }
-            console.log(data);
-                
-            console.log("elem",data);
-            console.log("whichScreen",whichScreen);
-            fetch('/currentDir1',{
+            
+            fetch('/redrowWindow',{
                     method: 'POST',
                     mode: 'cors',
                     headers: {
@@ -50,6 +43,16 @@ export default {
 
 <style>
 .row__element{
-    border: 1px solid red;
+    width: 632px;
+    text-align: left;
+    height: 20px;
+    margin-top: 5px;
+    /* border: 1px solid black; */
+}
+.back-image{
+    width: 20px;
+    height: 20px;
+    margin-left:20px;
+    
 }
 </style>

@@ -1,21 +1,15 @@
 <template>
-    <div id = "app">
-      <h1>Тестовое задание.</h1>
-      <hr>
+    <div id = "app">   
       <Todo
         @newvalue = "newvalue"
+        @forbothwindows = "forbothwindows"
         @selectitem = "selectitem"
         v-bind:firstWindow="firstWindow"
         v-bind:secondWindow="secondWindow"
-        v-bind:directories="directories"
-        v-bind:firstDir="firstDir"
-        v-bind:secondDir="secondDir"
+        v-bind:directories="directories"       
         v-bind:whichScreen="whichScreen"
-        v-bind:flagForBack ="flagForBack"
-        v-bind:windows ="windows"
        />
-    </div>
-    
+    </div>    
 </template>
 
 <script>
@@ -30,17 +24,15 @@ export default {
       
       firstWindow:{},
       secondWindow:{},     
-      directories:["C:","E:","D:"],
-      firstDir:"C:",
-      secondDir:"C:",
-      whichScreen: true,
-      flagForBack: true,       
+      directories:[],
+      whichScreen: true,            
     }
   },
   mounted(){
-    fetch('/1', {
-    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, *cors, same-origin    
+
+    fetch('/firstWindow', {
+    method: 'POST', 
+    mode: 'cors',    
     headers: {
        'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -49,48 +41,48 @@ export default {
   })
     .then(response => response.json())    
     .then(json => this.firstWindow = json.table)
-    // .then(json => this.firstDir = json.table[0].dir)    
-    .then(json => console.log(json))     
     
-    fetch('/2', {
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin    
+    
+    fetch('/secondWindow', {
+        method: 'POST', 
+        mode: 'cors',    
         headers: {
           'Content-Type': 'application/json',
             'Accept': 'application/json'
         },
-    })
+  })
   .then(response => response.json()) 
   .then(json => this.secondWindow = json.table)
-  // .then(json => this.secondDir = json.table[0].dir) 
-  .then(json => console.log(json))
-  // .then(this.secondDir = this.secondWindow[0].dir)
-
-
-  fetch('/drives', {
-    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, *cors, same-origin    
-    headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-    
-    })
-    .then(response => response.json()) 
-    .then(json => this.directories = json)
-    .then(json => console.log("диски", json))       
-  },
   
+
+    fetch('/drives', {
+      method: 'POST', 
+      mode: 'cors',  
+      headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+      
+      })
+      .then(response => response.json()) 
+      .then(json => this.directories = json)    
+  },  
   components: {
     Todo    
   },
-  methods:{
+  methods:{      
       newvalue(data){               
-         if(data[1]){ 
-           this.firstWindow = data[0]; 
-         }else{
-           this.secondWindow = data[0];           
-         }
+          if(data[1]){ 
+            this.firstWindow = data[0]; 
+          }else{
+            this.secondWindow = data[0];           
+          }
+      },
+      forbothwindows(data){
+        console.log(typeof(data));        
+        console.log(data);
+        this.firstWindow = data[0].table;
+        this.secondWindow = data[1].table; 
       }
   },  
 }
@@ -98,7 +90,7 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

@@ -1,7 +1,6 @@
 <template>
     <div >
-        <select class = "select" v-on:change="event =>takeWay(event)">
-            <!-- <option>{{directories}}</option>             -->
+        <select v-on:change="event =>takeWay(event, whichScreen)">            
              <option  v-for="directory in directories" :key="directory" :value="directory" >{{directory}}</option>
         </select>
     </div>
@@ -10,17 +9,25 @@
 
 <script>
 export default {
-    props:['directories'],
+    props:['directories', 'whichScreen'],
+        
     methods:{
-         takeWay: function(event) {
-            console.log(event.target.value);
+         takeWay: function(event, whichScreen) {
+            let elem = {};            
+            elem['dir']  = event.target.value;  
+            elem['whichScreen']  = whichScreen;  
+            fetch('/selectMenu',{
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'                 
+                    },
+                    body: JSON.stringify(elem)                
+                })
+                .then(response => response.json()) 
+                .then(json =>this.$emit("newvalue", [json.table, whichScreen]))  
         }
     }
 }
 </script>
-
-<style scoped>
-.select{
-    margin-left: 0px;
-}
-</style>
